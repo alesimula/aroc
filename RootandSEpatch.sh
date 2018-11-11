@@ -60,19 +60,7 @@ rm /.this
 
 detect_architecture() {
   
-# TODO: Test/improve this function
-
-#if [ -z "$ANDROID_ARCH" ]; then
-    ARCH="`uname -m`"
-#fi
-case "$ARCH" in
-x86 | i?86) ANDROID_ARCH="x86";;
-x86_64 | amd64) ANDROID_ARCH="x86";;
-armel) ANDROID_ARCH="armel";;
-arm64 | aarch64) ANDROID_ARCH="armv7";;
-arm*) ANDROID_ARCH="armv7";;
-*) error 2 "Invalid architecture '$ARCH'.";;
-esac
+ANDROID_ARCH="x86"
 
 }
 
@@ -145,7 +133,7 @@ rm -rf  /usr/local/Android_Images/system.raw.expanded.img
 if [ $ANDROID_ARCH=armv7 ]; then
   cd /usr/local/Android_Images
 #  dd if=/dev/zero of=system.raw.expanded.img count=2000000 bs=1024 status=progress
-fallocate -l 1.7G  /usr/local/Android_Images/system.raw.expanded.img
+fallocate -l 2.2G  /usr/local/Android_Images/system.raw.expanded.img
 
   else
 
@@ -153,6 +141,7 @@ fallocate -l 1.7G  /usr/local/Android_Images/system.raw.expanded.img
     cd /usr/local/Android_Images
 #  dd if=/dev/zero of=system.raw.expanded.img count=2000000 bs=1024 status=progress
 fallocate -l 2.2G  /usr/local/Android_Images/system.raw.expanded.img
+echo "2.2 gigabaytlik bir dosya yarattim"
 
    else
     echo "Error!"
@@ -163,7 +152,6 @@ fallocate -l 2.2G  /usr/local/Android_Images/system.raw.expanded.img
 #
 fi
 
-#fallocate -l 2G  /usr/local/Android_Images/system.raw.expanded.img
 sleep 0.001
 echo "Formatting system.raw.expanded.img as ext4 filesystem"
 echo
@@ -212,7 +200,7 @@ if [ ! -e /usr/local/bin/busybox ]; then
   chmod a+x /usr/local/bin/busybox
 
 fi
-
+echo "busybox gereken yere kopyalandi"
 }
 
 download_supersu() {
@@ -249,7 +237,7 @@ download_supersu() {
 # Copy the required files over to ~/Downloads
 
 cp -r -a common /home/chronos/user/Downloads
-  
+echo "Burada Android architecture soyle $ANDROID_ARCH"  
 if [ $ANDROID_ARCH=armv7 ]; then
   cp -r -a armv7 /home/chronos/user/Downloads
   else
@@ -923,7 +911,7 @@ mkdir -p /usr/local/Android_Images/Mounted
 mount -o loop,rw,sync /usr/local/Android_Images/system.raw.expanded.img /usr/local/Android_Images/Mounted 2>/dev/null
 
 # Set the right directory from which to copy the su binary.
-
+echo "burada android arch su sekilde: $ANDROID_ARCH"
 case "$ANDROID_ARCH" in
 armv7)
 SU_ARCHDIR=/home/chronos/user/Downloads/armv7
@@ -932,6 +920,7 @@ esac
 
 case "$ANDROID_ARCH" in
 x86)
+echo "buradax86 android arch su sekilde: $ANDROID_ARCH"
 SU_ARCHDIR=/home/chronos/user/Downloads/x86
 ;;
 esac
@@ -951,7 +940,7 @@ echo
 
 # Copying SuperSU files to $arc_system
     
-echo "Creating SuperSU directory in system/priv-app, copying SuperSU apk, and setting its permissions and contexts"
+echo "Hoppa Creating SuperSU directory in system/priv-app, copying SuperSU apk, and setting its permissions and contexts"
 
 cd $arc_system/priv-app
   mkdir -p $arc_system/priv-app/SuperSU
@@ -973,11 +962,13 @@ sleep 0.2
 case "$ANDROID_ARCH" in
 armv7)
 copy_su_armv7
+echo "burada su-arm7 icin kopya yapiyoruz"
 ;;
 esac
 
 case "$ANDROID_ARCH" in
 x86)
+echo "burada su-x86 icin kopya yapiyoruz"
 copy_su_x86
 ;;
 esac
@@ -987,7 +978,7 @@ echo "Copying supolicy to system/xbin, libsupol to system/lib and setting permis
 cd $arc_system/xbin
 
   cp $SU_ARCHDIR/supolicy $arc_system/xbin/supolicy
-
+  echo "burada supolicy kopyaliyoruz"
   chmod 0755 $arc_system/xbin/supolicy
   chown 655360 $arc_system/xbin/supolicy
   chgrp 655360 $arc_system/xbin/supolicy
